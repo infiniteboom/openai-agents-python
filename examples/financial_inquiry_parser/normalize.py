@@ -73,7 +73,7 @@ def infer_contract_code(text: str, *, current_date: date) -> str | None:
 
     t = text.strip()
     # Prefer explicit YYMM forms (e.g. hc2610).
-    m = re.search(r"(?i)\b([a-z]{1,6})\s*([0-9]{4})\b", t)
+    m = re.search(r"(?i)(?<![a-z])([a-z]{1,6})\s*([0-9]{4})(?![0-9])", t)
     if m:
         product = m.group(1).upper()
         yymm = m.group(2)
@@ -83,7 +83,7 @@ def infer_contract_code(text: str, *, current_date: date) -> str | None:
         return None
 
     # Next: product + month (e.g. hc10).
-    m = re.search(r"(?i)\b([a-z]{1,6})\s*([0-9]{1,2})\b", t)
+    m = re.search(r"(?i)(?<![a-z])([a-z]{1,6})\s*([0-9]{1,2})(?![0-9])", t)
     if not m:
         return None
 
