@@ -5,10 +5,8 @@ import asyncio
 from datetime import date
 
 from agents import Agent, ModelSettings, Runner
-
 from examples.financial_inquiry_parser.normalize import InquiryContext, normalize_inquiry
 from examples.financial_inquiry_parser.schema import InquiryQuote
-
 
 INSTRUCTIONS = """You are a financial RFQ parser.
 

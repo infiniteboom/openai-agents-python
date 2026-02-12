@@ -33,6 +33,7 @@ class InquiryQuote(BaseModel):
         default=None, description="Optional underlying/entry reference price."
     )
     expire_date: str | None = Field(
-        default=None, description="Expiration date (YYYY-MM-DD).", pattern=r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        default=None,
+        description="Expiration date (YYYY-MM-DD).",
+        pattern=r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
     )
-

@@ -60,12 +60,8 @@ def test_expire_date_precedence_absolute_over_relative() -> None:
 
 
 def test_infer_expire_date_absolute_month_day_cross_year() -> None:
-    assert (
-        infer_expire_date("4月15到期", current_date=date(2026, 2, 12)) == "2026-04-15"
-    )
-    assert (
-        infer_expire_date("1月5到期", current_date=date(2026, 11, 20)) == "2027-01-05"
-    )
+    assert infer_expire_date("4月15到期", current_date=date(2026, 2, 12)) == "2026-04-15"
+    assert infer_expire_date("1月5到期", current_date=date(2026, 11, 20)) == "2027-01-05"
 
 
 def test_infer_expire_date_relative_from_text() -> None:
@@ -86,13 +82,6 @@ def test_strike_precedence_over_strike_offset() -> None:
 
 
 def test_strike_offset_moneyness_parsing() -> None:
-    assert (
-        normalize_quote("平值", current_date=date(2026, 2, 12)).strike_offset == 0.0
-    )
-    assert (
-        normalize_quote("实30", current_date=date(2026, 2, 12)).strike_offset == 30.0
-    )
-    assert (
-        normalize_quote("虚30", current_date=date(2026, 2, 12)).strike_offset == -30.0
-    )
-
+    assert normalize_quote("平值", current_date=date(2026, 2, 12)).strike_offset == 0.0
+    assert normalize_quote("实30", current_date=date(2026, 2, 12)).strike_offset == 30.0
+    assert normalize_quote("虚30", current_date=date(2026, 2, 12)).strike_offset == -30.0
