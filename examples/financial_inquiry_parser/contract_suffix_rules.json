@@ -1,0 +1,1282 @@
+{
+  "ignored_code_samples": [
+    "0.9*m2605+0.1*c2605",
+    "1*m2605+1*c2605",
+    "l2603F",
+    "l2604F",
+    "l2605F",
+    "l2606F",
+    "l2607F",
+    "l2608F",
+    "pp2603F",
+    "pp2604F",
+    "pp2605F",
+    "pp2606F",
+    "pp2607F",
+    "pp2608F",
+    "v2603F",
+    "v2604F",
+    "v2605F",
+    "v2606F",
+    "v2607F",
+    "v2608F"
+  ],
+  "ignored_row_count": 20,
+  "matched_products": 87,
+  "rules": {
+    "A": {
+      "sample_contracts": [
+        "A2603",
+        "A2605",
+        "A2607"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "A"
+      ]
+    },
+    "AD": {
+      "sample_contracts": [
+        "AD2602",
+        "AD2603",
+        "AD2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "AD"
+      ]
+    },
+    "AG": {
+      "sample_contracts": [
+        "AG2602",
+        "AG2603",
+        "AG2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "AG"
+      ]
+    },
+    "AL": {
+      "sample_contracts": [
+        "AL2602",
+        "AL2603",
+        "AL2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "AL"
+      ]
+    },
+    "AO": {
+      "sample_contracts": [
+        "AO2602",
+        "AO2603",
+        "AO2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "AO"
+      ]
+    },
+    "AP": {
+      "sample_contracts": [
+        "AP603",
+        "AP604",
+        "AP605"
+      ],
+      "suffix_format": "YMM",
+      "suffix_lengths": [
+        3
+      ],
+      "variety_codes": [
+        "AP"
+      ]
+    },
+    "AU": {
+      "sample_contracts": [
+        "AU2602",
+        "AU2603",
+        "AU2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "AU"
+      ]
+    },
+    "B": {
+      "sample_contracts": [
+        "B2602",
+        "B2603",
+        "B2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "B"
+      ]
+    },
+    "BB": {
+      "sample_contracts": [
+        "BB2603",
+        "BB2605",
+        "BB2607"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "BB"
+      ]
+    },
+    "BC": {
+      "sample_contracts": [
+        "BC2602",
+        "BC2603",
+        "BC2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "BC"
+      ]
+    },
+    "BR": {
+      "sample_contracts": [
+        "BR2602",
+        "BR2603",
+        "BR2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "BR"
+      ]
+    },
+    "BU": {
+      "sample_contracts": [
+        "BU2602",
+        "BU2603",
+        "BU2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "BU"
+      ]
+    },
+    "BZ": {
+      "sample_contracts": [
+        "BZ2603",
+        "BZ2604",
+        "BZ2605"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "BZ"
+      ]
+    },
+    "C": {
+      "sample_contracts": [
+        "C2603",
+        "C2605",
+        "C2607"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "C"
+      ]
+    },
+    "CF": {
+      "sample_contracts": [
+        "CF603",
+        "CF605",
+        "CF607"
+      ],
+      "suffix_format": "YMM",
+      "suffix_lengths": [
+        3
+      ],
+      "variety_codes": [
+        "CF"
+      ]
+    },
+    "CJ": {
+      "sample_contracts": [
+        "CJ603",
+        "CJ605",
+        "CJ607"
+      ],
+      "suffix_format": "YMM",
+      "suffix_lengths": [
+        3
+      ],
+      "variety_codes": [
+        "CJ"
+      ]
+    },
+    "CS": {
+      "sample_contracts": [
+        "CS2603",
+        "CS2605",
+        "CS2607"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "CS"
+      ]
+    },
+    "CU": {
+      "sample_contracts": [
+        "CU2602",
+        "CU2603",
+        "CU2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "CU"
+      ]
+    },
+    "CY": {
+      "sample_contracts": [
+        "CY602",
+        "CY603",
+        "CY604"
+      ],
+      "suffix_format": "YMM",
+      "suffix_lengths": [
+        3
+      ],
+      "variety_codes": [
+        "CY"
+      ]
+    },
+    "EB": {
+      "sample_contracts": [
+        "EB2602",
+        "EB2603",
+        "EB2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "EB"
+      ]
+    },
+    "EC": {
+      "sample_contracts": [
+        "EC2604",
+        "EC2605",
+        "EC2606"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "EC"
+      ]
+    },
+    "EG": {
+      "sample_contracts": [
+        "EG2602",
+        "EG2603",
+        "EG2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "EG"
+      ]
+    },
+    "FB": {
+      "sample_contracts": [
+        "FB2602",
+        "FB2603",
+        "FB2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "FB"
+      ]
+    },
+    "FG": {
+      "sample_contracts": [
+        "FG602",
+        "FG603",
+        "FG604"
+      ],
+      "suffix_format": "YMM",
+      "suffix_lengths": [
+        3
+      ],
+      "variety_codes": [
+        "FG"
+      ]
+    },
+    "FU": {
+      "sample_contracts": [
+        "FU2603",
+        "FU2604",
+        "FU2605"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "FU"
+      ]
+    },
+    "HC": {
+      "sample_contracts": [
+        "HC2602",
+        "HC2603",
+        "HC2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "HC"
+      ]
+    },
+    "I": {
+      "sample_contracts": [
+        "I2602",
+        "I2603",
+        "I2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "I"
+      ]
+    },
+    "IC": {
+      "sample_contracts": [
+        "IC2602",
+        "IC2603",
+        "IC2606"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "IC"
+      ]
+    },
+    "IF": {
+      "sample_contracts": [
+        "IF2602",
+        "IF2603",
+        "IF2606"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "IF"
+      ]
+    },
+    "IH": {
+      "sample_contracts": [
+        "IH2602",
+        "IH2603",
+        "IH2606"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "IH"
+      ]
+    },
+    "IM": {
+      "sample_contracts": [
+        "IM2602",
+        "IM2603",
+        "IM2606"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "IM"
+      ]
+    },
+    "J": {
+      "sample_contracts": [
+        "J2602",
+        "J2603",
+        "J2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "J"
+      ]
+    },
+    "JD": {
+      "sample_contracts": [
+        "JD2602",
+        "JD2603",
+        "JD2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "JD"
+      ]
+    },
+    "JM": {
+      "sample_contracts": [
+        "JM2602",
+        "JM2603",
+        "JM2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "JM"
+      ]
+    },
+    "JR": {
+      "sample_contracts": [
+        "JR603",
+        "JR605",
+        "JR607"
+      ],
+      "suffix_format": "YMM",
+      "suffix_lengths": [
+        3
+      ],
+      "variety_codes": [
+        "JR"
+      ]
+    },
+    "L": {
+      "sample_contracts": [
+        "L2602",
+        "L2603",
+        "L2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "L"
+      ]
+    },
+    "LC": {
+      "sample_contracts": [
+        "LC2602",
+        "LC2603",
+        "LC2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "LC"
+      ]
+    },
+    "LG": {
+      "sample_contracts": [
+        "LG2603",
+        "LG2605",
+        "LG2607"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "LG"
+      ]
+    },
+    "LH": {
+      "sample_contracts": [
+        "LH2603",
+        "LH2605",
+        "LH2607"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "LH"
+      ]
+    },
+    "LU": {
+      "sample_contracts": [
+        "LU2603",
+        "LU2604",
+        "LU2605"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "LU"
+      ]
+    },
+    "M": {
+      "sample_contracts": [
+        "M2603",
+        "M2605",
+        "M2607"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "M"
+      ]
+    },
+    "MA": {
+      "sample_contracts": [
+        "MA602",
+        "MA603",
+        "MA604"
+      ],
+      "suffix_format": "YMM",
+      "suffix_lengths": [
+        3
+      ],
+      "variety_codes": [
+        "MA"
+      ]
+    },
+    "NI": {
+      "sample_contracts": [
+        "NI2602",
+        "NI2603",
+        "NI2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "NI"
+      ]
+    },
+    "NR": {
+      "sample_contracts": [
+        "NR2602",
+        "NR2603",
+        "NR2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "NR"
+      ]
+    },
+    "OI": {
+      "sample_contracts": [
+        "OI603",
+        "OI605",
+        "OI607"
+      ],
+      "suffix_format": "YMM",
+      "suffix_lengths": [
+        3
+      ],
+      "variety_codes": [
+        "OI"
+      ]
+    },
+    "OP": {
+      "sample_contracts": [
+        "OP2602",
+        "OP2603",
+        "OP2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "OP"
+      ]
+    },
+    "P": {
+      "sample_contracts": [
+        "P2602",
+        "P2603",
+        "P2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "P"
+      ]
+    },
+    "PB": {
+      "sample_contracts": [
+        "PB2602",
+        "PB2603",
+        "PB2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "PB"
+      ]
+    },
+    "PD": {
+      "sample_contracts": [
+        "PD2606",
+        "PD2608",
+        "PD2610"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "PD"
+      ]
+    },
+    "PF": {
+      "sample_contracts": [
+        "PF602",
+        "PF603",
+        "PF604"
+      ],
+      "suffix_format": "YMM",
+      "suffix_lengths": [
+        3
+      ],
+      "variety_codes": [
+        "PF"
+      ]
+    },
+    "PG": {
+      "sample_contracts": [
+        "PG2602",
+        "PG2603",
+        "PG2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "PG"
+      ]
+    },
+    "PK": {
+      "sample_contracts": [
+        "PK603",
+        "PK604",
+        "PK605"
+      ],
+      "suffix_format": "YMM",
+      "suffix_lengths": [
+        3
+      ],
+      "variety_codes": [
+        "PK"
+      ]
+    },
+    "PL": {
+      "sample_contracts": [
+        "PL602",
+        "PL603",
+        "PL604"
+      ],
+      "suffix_format": "YMM",
+      "suffix_lengths": [
+        3
+      ],
+      "variety_codes": [
+        "PL"
+      ]
+    },
+    "PM": {
+      "sample_contracts": [
+        "PM603",
+        "PM605",
+        "PM607"
+      ],
+      "suffix_format": "YMM",
+      "suffix_lengths": [
+        3
+      ],
+      "variety_codes": [
+        "PM"
+      ]
+    },
+    "PP": {
+      "sample_contracts": [
+        "PP2602",
+        "PP2603",
+        "PP2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "PP"
+      ]
+    },
+    "PR": {
+      "sample_contracts": [
+        "PR602",
+        "PR603",
+        "PR604"
+      ],
+      "suffix_format": "YMM",
+      "suffix_lengths": [
+        3
+      ],
+      "variety_codes": [
+        "PR"
+      ]
+    },
+    "PS": {
+      "sample_contracts": [
+        "PS2602",
+        "PS2603",
+        "PS2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "PS"
+      ]
+    },
+    "PT": {
+      "sample_contracts": [
+        "PT2606",
+        "PT2608",
+        "PT2610"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "PT"
+      ]
+    },
+    "PX": {
+      "sample_contracts": [
+        "PX602",
+        "PX603",
+        "PX604"
+      ],
+      "suffix_format": "YMM",
+      "suffix_lengths": [
+        3
+      ],
+      "variety_codes": [
+        "PX"
+      ]
+    },
+    "RB": {
+      "sample_contracts": [
+        "RB2602",
+        "RB2603",
+        "RB2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "RB"
+      ]
+    },
+    "RI": {
+      "sample_contracts": [
+        "RI603",
+        "RI605",
+        "RI607"
+      ],
+      "suffix_format": "YMM",
+      "suffix_lengths": [
+        3
+      ],
+      "variety_codes": [
+        "RI"
+      ]
+    },
+    "RM": {
+      "sample_contracts": [
+        "RM603",
+        "RM605",
+        "RM607"
+      ],
+      "suffix_format": "YMM",
+      "suffix_lengths": [
+        3
+      ],
+      "variety_codes": [
+        "RM"
+      ]
+    },
+    "RR": {
+      "sample_contracts": [
+        "RR2602",
+        "RR2603",
+        "RR2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "RR"
+      ]
+    },
+    "RS": {
+      "sample_contracts": [
+        "RS607",
+        "RS608",
+        "RS609"
+      ],
+      "suffix_format": "YMM",
+      "suffix_lengths": [
+        3
+      ],
+      "variety_codes": [
+        "RS"
+      ]
+    },
+    "RU": {
+      "sample_contracts": [
+        "RU2603",
+        "RU2604",
+        "RU2605"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "RU"
+      ]
+    },
+    "SA": {
+      "sample_contracts": [
+        "SA602",
+        "SA603",
+        "SA604"
+      ],
+      "suffix_format": "YMM",
+      "suffix_lengths": [
+        3
+      ],
+      "variety_codes": [
+        "SA"
+      ]
+    },
+    "SC": {
+      "sample_contracts": [
+        "SC2603",
+        "SC2604",
+        "SC2605"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "SC"
+      ]
+    },
+    "SF": {
+      "sample_contracts": [
+        "SF602",
+        "SF603",
+        "SF604"
+      ],
+      "suffix_format": "YMM",
+      "suffix_lengths": [
+        3
+      ],
+      "variety_codes": [
+        "SF"
+      ]
+    },
+    "SH": {
+      "sample_contracts": [
+        "SH602",
+        "SH603",
+        "SH604"
+      ],
+      "suffix_format": "YMM",
+      "suffix_lengths": [
+        3
+      ],
+      "variety_codes": [
+        "SH"
+      ]
+    },
+    "SI": {
+      "sample_contracts": [
+        "SI2602",
+        "SI2603",
+        "SI2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "SI"
+      ]
+    },
+    "SM": {
+      "sample_contracts": [
+        "SM602",
+        "SM603",
+        "SM604"
+      ],
+      "suffix_format": "YMM",
+      "suffix_lengths": [
+        3
+      ],
+      "variety_codes": [
+        "SM"
+      ]
+    },
+    "SN": {
+      "sample_contracts": [
+        "SN2602",
+        "SN2603",
+        "SN2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "SN"
+      ]
+    },
+    "SP": {
+      "sample_contracts": [
+        "SP2602",
+        "SP2603",
+        "SP2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "SP"
+      ]
+    },
+    "SR": {
+      "sample_contracts": [
+        "SR603",
+        "SR605",
+        "SR607"
+      ],
+      "suffix_format": "YMM",
+      "suffix_lengths": [
+        3
+      ],
+      "variety_codes": [
+        "SR"
+      ]
+    },
+    "SS": {
+      "sample_contracts": [
+        "SS2602",
+        "SS2603",
+        "SS2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "SS"
+      ]
+    },
+    "T": {
+      "sample_contracts": [
+        "T2603",
+        "T2606",
+        "T2609"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "T"
+      ]
+    },
+    "TA": {
+      "sample_contracts": [
+        "TA602",
+        "TA603",
+        "TA604"
+      ],
+      "suffix_format": "YMM",
+      "suffix_lengths": [
+        3
+      ],
+      "variety_codes": [
+        "TA"
+      ]
+    },
+    "TF": {
+      "sample_contracts": [
+        "TF2603",
+        "TF2606",
+        "TF2609"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "TF"
+      ]
+    },
+    "TL": {
+      "sample_contracts": [
+        "TL2603",
+        "TL2606",
+        "TL2609"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "TL"
+      ]
+    },
+    "TS": {
+      "sample_contracts": [
+        "TS2603",
+        "TS2606",
+        "TS2609"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "TS"
+      ]
+    },
+    "UR": {
+      "sample_contracts": [
+        "UR602",
+        "UR603",
+        "UR604"
+      ],
+      "suffix_format": "YMM",
+      "suffix_lengths": [
+        3
+      ],
+      "variety_codes": [
+        "UR"
+      ]
+    },
+    "V": {
+      "sample_contracts": [
+        "V2602",
+        "V2603",
+        "V2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "V"
+      ]
+    },
+    "WH": {
+      "sample_contracts": [
+        "WH603",
+        "WH605",
+        "WH607"
+      ],
+      "suffix_format": "YMM",
+      "suffix_lengths": [
+        3
+      ],
+      "variety_codes": [
+        "WH"
+      ]
+    },
+    "WR": {
+      "sample_contracts": [
+        "WR2602",
+        "WR2603",
+        "WR2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "WR"
+      ]
+    },
+    "Y": {
+      "sample_contracts": [
+        "Y2603",
+        "Y2605",
+        "Y2607"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "Y"
+      ]
+    },
+    "ZC": {
+      "sample_contracts": [
+        "ZC603",
+        "ZC604",
+        "ZC605"
+      ],
+      "suffix_format": "YMM",
+      "suffix_lengths": [
+        3
+      ],
+      "variety_codes": [
+        "ZC"
+      ]
+    },
+    "ZN": {
+      "sample_contracts": [
+        "ZN2602",
+        "ZN2603",
+        "ZN2604"
+      ],
+      "suffix_format": "YYMM",
+      "suffix_lengths": [
+        4
+      ],
+      "variety_codes": [
+        "ZN"
+      ]
+    }
+  },
+  "source": "examples/hz_contracts_data.json",
+  "summary": {
+    "MIXED_count": 0,
+    "MIXED_products": [],
+    "YMM_count": 26,
+    "YMM_products": [
+      "AP",
+      "CF",
+      "CJ",
+      "CY",
+      "FG",
+      "JR",
+      "MA",
+      "OI",
+      "PF",
+      "PK",
+      "PL",
+      "PM",
+      "PR",
+      "PX",
+      "RI",
+      "RM",
+      "RS",
+      "SA",
+      "SF",
+      "SH",
+      "SM",
+      "SR",
+      "TA",
+      "UR",
+      "WH",
+      "ZC"
+    ],
+    "YYMM_count": 61
+  },
+  "total_rows": 866
+}
