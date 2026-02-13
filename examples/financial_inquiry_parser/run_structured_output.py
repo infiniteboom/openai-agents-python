@@ -5,6 +5,7 @@ import asyncio
 from dataclasses import dataclass
 from datetime import date
 
+import examples.env_setup  # noqa: F401
 from agents import Agent, RunContextWrapper, Runner
 from examples.financial_inquiry_parser.schema import InquiryQuote
 

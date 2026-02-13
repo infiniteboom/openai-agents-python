@@ -1,13 +1,20 @@
 from __future__ import annotations
 
 import re
+import unicodedata
 from dataclasses import dataclass
-from datetime import date, timedelta
-from typing import Literal
+from datetime import date, datetime, timedelta
+from typing import Annotated, Literal, cast
+
+from dateutil import parser as dateutil_parser  # type: ignore[import-untyped]
+from pydantic import Field
+from rapidfuzz import fuzz as rapidfuzz_fuzz, process as rapidfuzz_process
 
 from agents import RunContextWrapper, function_tool
 
-from .schema import InquiryQuote
+from .generated_contract_suffix_rules import PRODUCT_SUFFIX_FORMAT
+from .generated_product_aliases import PRODUCT_ALIAS_TO_CODE
+from .schema import InquiryQuote, ProductCandidate
 
 
 @dataclass
@@ -15,6 +22,85 @@ class InquiryContext:
     """Runtime context injected by the caller."""
 
     current_date: date
+
+
+def _normalize_product_text(value: str) -> str:
+    normalized = unicodedata.normalize("NFKC", value).upper()
+    return re.sub(r"[^A-Z0-9\u4e00-\u9fff]+", "", normalized)
+
+
+def _build_product_alias_entries() -> list[tuple[str, str, str]]:
+    alias_to_code: dict[str, str] = {}
+
+    for alias, mapped_code in PRODUCT_ALIAS_TO_CODE.items():
+        canonical_code = mapped_code.strip().upper()
+        alias_to_code[alias] = canonical_code
+
+    return [(alias, _normalize_product_text(alias), code) for alias, code in alias_to_code.items()]
+
+
+_PRODUCT_ALIAS_ENTRIES = _build_product_alias_entries()
+_PRODUCT_ALIAS_TO_CODE = {alias: code for alias, _, code in _PRODUCT_ALIAS_ENTRIES}
+_KNOWN_PRODUCT_CODES = {code for _, _, code in _PRODUCT_ALIAS_ENTRIES}
+
+
+def _upsert_candidate(
+    candidates: dict[str, ProductCandidate], *, product_code: str, matched_alias: str, score: float
+) -> None:
+    bounded_score = max(0.0, min(100.0, float(score)))
+    existing = candidates.get(product_code)
+    if existing is None or bounded_score > existing.score:
+        candidates[product_code] = ProductCandidate(
+            product_code=product_code,
+            matched_alias=matched_alias,
+            score=round(bounded_score, 2),
+        )
+
+
+def find_product_candidates(query: str, *, top_k: int = 5) -> list[ProductCandidate]:
+    """Find likely product codes from free text using alias match + rapidfuzz."""
+
+    if top_k <= 0:
+        return []
+
+    normalized_query = _normalize_product_text(query)
+    if not normalized_query:
+        return []
+
+    candidates: dict[str, ProductCandidate] = {}
+
+    # Deterministic direct and containment matches first.
+    for alias, normalized_alias, code in _PRODUCT_ALIAS_ENTRIES:
+        if normalized_alias and normalized_alias in normalized_query:
+            _upsert_candidate(candidates, product_code=code, matched_alias=alias, score=100.0)
+
+    # Explicit alpha token extraction, e.g. HC10 -> HC.
+    for token in re.findall(r"[A-Z]{1,6}", normalized_query):
+        if token in _KNOWN_PRODUCT_CODES:
+            _upsert_candidate(candidates, product_code=token, matched_alias=token, score=100.0)
+
+    # Fuzzy matching is always enabled.
+    fuzzy_query = re.sub(r"[0-9]+", " ", unicodedata.normalize("NFKC", query)).strip().upper()
+    if fuzzy_query:
+        limit = min(len(_PRODUCT_ALIAS_TO_CODE), max(top_k * 5, 10))
+        for alias, score, _ in rapidfuzz_process.extract(
+            fuzzy_query,
+            list(_PRODUCT_ALIAS_TO_CODE.keys()),
+            scorer=rapidfuzz_fuzz.WRatio,
+            limit=limit,
+        ):
+            if score < 60:
+                continue
+            code = _PRODUCT_ALIAS_TO_CODE[alias]
+            _upsert_candidate(
+                candidates,
+                product_code=code,
+                matched_alias=alias,
+                score=float(score),
+            )
+
+    ranked = sorted(candidates.values(), key=lambda item: (-item.score, item.product_code))
+    return ranked[:top_k]
 
 
 def _last_day_of_month(year: int, month: int) -> int:
@@ -99,56 +185,68 @@ def infer_contract_code(text: str, *, current_date: date) -> str | None:
     return f"{product}{year:02d}{month:02d}"
 
 
-def infer_call_put(text: str) -> Literal[1, 2] | None:
-    t = text.lower()
-    if any(k in text for k in ("看涨", "认购")) or "call" in t:
-        return 1
-    if any(k in text for k in ("看跌", "认沽")) or "put" in t:
-        return 2
-    return None
+def _uses_ymm_contract_suffix(product: str) -> bool:
+    return PRODUCT_SUFFIX_FORMAT.get(product) == "YMM"
 
 
-def infer_buy_sell(text: str) -> Literal[1, -1] | None:
-    """Infer customer buy/sell direction from common phrasing.
+def _resolve_contract_year(
+    month: int, *, current_date: date, contract_year: int | None
+) -> int | None:
+    if contract_year is not None:
+        if contract_year < 0:
+            return None
+        if contract_year >= 100:
+            return contract_year % 100
+        if contract_year < 10:
+            # Treat single-digit year as the year-ones digit in the nearest
+            # not-yet-expired contract year.
+            current_yy = current_date.year % 100
+            candidate = (current_yy // 10) * 10 + contract_year
+            if candidate < current_yy or (candidate == current_yy and month < current_date.month):
+                candidate += 10
+            return candidate
+        return contract_year
 
-    Returns:
-      1 for customer buys, -1 for customer sells, or None if ambiguous.
-    """
-
-    candidates: set[int] = set()
-
-    # Most explicit first.
-    if any(k in text for k in ("客户买", "客户买入")):
-        candidates.add(1)
-    if any(k in text for k in ("客户卖", "客户卖出")):
-        candidates.add(-1)
-
-    # Perspective flip: "we sell" -> customer buys; "we buy" -> customer sells.
-    if any(k in text for k in ("我方卖", "我们卖", "卖给你")) or "offer" in text.lower():
-        candidates.add(1)
-    if any(k in text for k in ("我方买", "我们买", "从你买")) or "bid" in text.lower():
-        candidates.add(-1)
-
-    # Generic verbs (lowest confidence).
-    if "买入" in text and "我方买入" not in text and "客户买入" not in text:
-        candidates.add(1)
-    if "卖出" in text and "我方卖出" not in text and "客户卖出" not in text:
-        candidates.add(-1)
-
-    if len(candidates) == 1:
-        return 1 if 1 in candidates else -1
-    return None
+    year = current_date.year % 100
+    if month < current_date.month:
+        year = (year + 1) % 100
+    return year
 
 
-def _infer_moneyness_offset(text: str) -> float | None:
-    if any(k in text for k in ("平值", "ATM", "at-the-money", "at the money")):
-        return 0.0
-
-    m = re.search(r"(实|虚)\s*([0-9]+(?:\.[0-9]+)?)", text)
-    if not m:
+def build_contract_code_from_parts(
+    *,
+    current_date: date,
+    product_code: str | None = None,
+    contract_month: int | None = None,
+    contract_year: int | None = None,
+) -> str | None:
+    if not product_code or contract_month is None:
         return None
-    sign = 1.0 if m.group(1) == "实" else -1.0
-    return sign * float(m.group(2))
+
+    product = product_code.strip().upper()
+    if not re.fullmatch(r"[A-Z]{1,6}", product):
+        return None
+    if not (1 <= contract_month <= 12):
+        return None
+
+    year = _resolve_contract_year(
+        contract_month, current_date=current_date, contract_year=contract_year
+    )
+    if year is None:
+        return None
+
+    if _uses_ymm_contract_suffix(product):
+        return f"{product}{year % 10}{contract_month:02d}"
+
+    return f"{product}{year:02d}{contract_month:02d}"
+
+
+def normalize_contract_code(value: str | None, *, current_date: date) -> str | None:
+    if not value:
+        return None
+
+    compact = re.sub(r"\s+", "", value)
+    return infer_contract_code(compact, current_date=current_date)
 
 
 def _infer_year_for_month_day(current: date, month: int, day: int) -> int:
@@ -160,13 +258,6 @@ def _infer_year_for_month_day(current: date, month: int, day: int) -> int:
 
 def _parse_expire_date_str(s: str, *, current_date: date) -> date | None:
     s = s.strip()
-    # YYYY-MM-DD / YYYY/M/D / YYYY.MM.DD
-    m = re.match(r"^([0-9]{4})\D([0-9]{1,2})\D([0-9]{1,2})$", s)
-    if m:
-        try:
-            return date(int(m.group(1)), int(m.group(2)), int(m.group(3)))
-        except ValueError:
-            return None
 
     # M月D日 (year inferred)
     m = re.match(r"^([0-9]{1,2})\s*月\s*([0-9]{1,2})\s*[日号]?$", s)
@@ -179,54 +270,20 @@ def _parse_expire_date_str(s: str, *, current_date: date) -> date | None:
         except ValueError:
             return None
 
-    return None
-
-
-_CN_NUM = {
-    "一": 1,
-    "二": 2,
-    "两": 2,
-    "三": 3,
-    "四": 4,
-    "五": 5,
-    "六": 6,
-    "七": 7,
-    "八": 8,
-    "九": 9,
-    "十": 10,
-}
-
-
-def _infer_relative_expiry_from_text(text: str) -> tuple[str, float | int] | None:
-    """Return (kind, value) where kind in {'months','natural_days','trading_days'}."""
-
-    # Trading days.
-    m = re.search(r"([0-9]+)\s*个?\s*交易日", text)
-    if m:
-        return ("trading_days", int(m.group(1)))
-
-    # Natural days: avoid matching "交易日".
-    m = re.search(r"([0-9]+)\s*(天|日)", text)
-    if m:
-        return ("natural_days", int(m.group(1)))
-
-    # Months (digits).
-    m = re.search(r"([0-9]+(?:\.[0-9]+)?)\s*个?\s*月", text)
-    if m:
-        return ("months", float(m.group(1)))
-
-    # Months (Chinese numerals).
-    m = re.search(r"(半|一|二|两|三|四|五|六|七|八|九|十)\s*个?\s*月", text)
-    if m:
-        if m.group(1) == "半":
-            return ("months", 0.5)
-        return ("months", float(_CN_NUM[m.group(1)]))
+    # Absolute date with explicit year. Use dateutil for flexible separators/forms.
+    if re.search(r"[0-9]{4}", s):
+        try:
+            parsed = cast(
+                datetime, dateutil_parser.parse(s, yearfirst=True, dayfirst=False, fuzzy=False)
+            )
+            return parsed.date()
+        except (ValueError, OverflowError):
+            return None
 
     return None
 
 
 def infer_expire_date(
-    text: str,
     *,
     current_date: date,
     explicit_expire_date: str | None = None,
@@ -234,7 +291,7 @@ def infer_expire_date(
     expire_in_natural_days: int | None = None,
     expire_in_trading_days: int | None = None,
 ) -> str | None:
-    """Resolve expire_date with precedence: absolute date > relative."""
+    """Resolve expire_date from explicit absolute or relative inputs."""
 
     if explicit_expire_date:
         d = _parse_expire_date_str(explicit_expire_date, current_date=current_date)
@@ -248,41 +305,12 @@ def infer_expire_date(
     if expire_in_natural_days is not None:
         return add_natural_days(current_date, expire_in_natural_days).isoformat()
 
-    # Infer from text (absolute first, then relative).
-    m = re.search(r"([0-9]{4}\D[0-9]{1,2}\D[0-9]{1,2})", text)
-    if m:
-        d = _parse_expire_date_str(m.group(1), current_date=current_date)
-        if d:
-            return d.isoformat()
-
-    m = re.search(r"([0-9]{1,2})\s*月\s*([0-9]{1,2})\s*[日号]?", text)
-    if m:
-        month = int(m.group(1))
-        day = int(m.group(2))
-        year = _infer_year_for_month_day(current_date, month, day)
-        try:
-            return date(year, month, day).isoformat()
-        except ValueError:
-            pass
-
-    rel = _infer_relative_expiry_from_text(text)
-    if rel:
-        kind, value = rel
-        if kind == "months":
-            return add_months(current_date, float(value)).isoformat()
-        if kind == "trading_days":
-            return add_trading_days_weekends_only(current_date, int(value)).isoformat()
-        if kind == "natural_days":
-            return add_natural_days(current_date, int(value)).isoformat()
-
     return None
 
 
 def normalize_quote(
-    text: str,
     *,
     current_date: date,
-    contract_code: str | None = None,
     call_put: Literal[1, 2] | None = None,
     buy_sell: Literal[1, -1] | None = None,
     strike: float | None = None,
@@ -292,26 +320,32 @@ def normalize_quote(
     expire_in_months: float | None = None,
     expire_in_natural_days: int | None = None,
     expire_in_trading_days: int | None = None,
+    product_code: str | None = None,
+    contract_month: int | None = None,
+    contract_year: int | None = None,
 ) -> InquiryQuote:
-    # Contract code.
-    contract = contract_code or infer_contract_code(text, current_date=current_date)
+    # Contract code from explicit split fields only.
+    contract = build_contract_code_from_parts(
+        current_date=current_date,
+        product_code=product_code,
+        contract_month=contract_month,
+        contract_year=contract_year,
+    )
 
-    # Call/put.
-    cp = call_put or infer_call_put(text)
+    # Call/put from explicit args only.
+    cp = call_put
 
-    # Direction.
-    bs = buy_sell or infer_buy_sell(text)
+    # Direction from explicit args only.
+    bs = buy_sell
 
     # Strike precedence: strike > strike_offset.
     s = strike
     so = strike_offset
     if s is not None:
         so = None
-    elif so is None:
-        so = _infer_moneyness_offset(text)
 
+    # Expiry from explicit args only (absolute date and relative durations).
     exp = infer_expire_date(
-        text,
         current_date=current_date,
         explicit_expire_date=expire_date,
         expire_in_months=expire_in_months,
@@ -352,10 +386,28 @@ def get_expire_date_by_trading_date(ctx: RunContextWrapper[InquiryContext], days
 
 
 @function_tool
-def normalize_inquiry(
+def get_product_candidates(
     ctx: RunContextWrapper[InquiryContext],
-    text: str,
-    contract_code: str | None = None,
+    query: Annotated[
+        str,
+        Field(
+            description="Raw RFQ text or product phrase. Example: '热卷05合约' or 'rb10'.",
+            min_length=1,
+        ),
+    ],
+    top_k: Annotated[
+        int, Field(description="Maximum number of candidates to return.", ge=1, le=10)
+    ] = 5,
+) -> list[ProductCandidate]:
+    """Return product-code candidates resolved from aliases and fuzzy matching."""
+
+    _ = ctx
+    return find_product_candidates(query, top_k=top_k)
+
+
+@function_tool
+def price_vanilla_option(
+    ctx: RunContextWrapper[InquiryContext],
     call_put: Literal[1, 2] | None = None,
     buy_sell: Literal[1, -1] | None = None,
     strike: float | None = None,
@@ -365,13 +417,23 @@ def normalize_inquiry(
     expire_in_months: float | None = None,
     expire_in_natural_days: int | None = None,
     expire_in_trading_days: int | None = None,
+    product_code: Annotated[
+        str | None,
+        Field(description="Contract product code only, letters only, e.g. HC."),
+    ] = None,
+    contract_month: Annotated[
+        int | None,
+        Field(description="Contract month as integer 1-12.", ge=1, le=12),
+    ] = None,
+    contract_year: Annotated[
+        int | None,
+        Field(description="Optional contract year as YYYY or YY (e.g. 2026 or 26).", ge=0),
+    ] = None,
 ) -> InquiryQuote:
-    """Tool entrypoint: return a strict `InquiryQuote` object without follow-up questions."""
+    """Tool entrypoint for vanilla option RFQ pricing parameter normalization."""
 
     return normalize_quote(
-        text,
         current_date=ctx.context.current_date,
-        contract_code=contract_code,
         call_put=call_put,
         buy_sell=buy_sell,
         strike=strike,
@@ -381,4 +443,7 @@ def normalize_inquiry(
         expire_in_months=expire_in_months,
         expire_in_natural_days=expire_in_natural_days,
         expire_in_trading_days=expire_in_trading_days,
+        product_code=product_code,
+        contract_month=contract_month,
+        contract_year=contract_year,
     )
