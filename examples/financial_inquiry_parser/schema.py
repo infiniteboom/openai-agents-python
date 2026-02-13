@@ -37,6 +37,11 @@ class InquiryQuote(BaseModel):
         description="Expiration date (YYYY-MM-DD).",
         pattern=r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
     )
+    quantity: float | None = Field(
+        default=None,
+        gt=0,
+        description="Requested trade quantity. Prefer normalized tons when unit is explicit.",
+    )
 
 
 class ProductCandidate(BaseModel):

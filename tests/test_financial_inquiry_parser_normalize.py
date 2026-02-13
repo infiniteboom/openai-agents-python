@@ -162,3 +162,11 @@ def test_normalize_quote_has_no_text_fallback_parsing() -> None:
     assert quote.buy_sell is None
     assert quote.strike_offset is None
     assert quote.expire_date is None
+
+
+def test_quantity_passthrough() -> None:
+    quote = normalize_quote(
+        current_date=date(2026, 2, 12),
+        quantity=30000.0,
+    )
+    assert quote.quantity == 30000.0

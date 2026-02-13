@@ -2,10 +2,18 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import json
 from datetime import date
 
 import examples.env_setup  # noqa: F401
-from agents import Agent, ModelSettings, Runner
+from agents import (
+    Agent,
+    FunctionToolResult,
+    ModelSettings,
+    RunContextWrapper,
+    Runner,
+    ToolsToFinalOutputResult,
+)
 from examples.financial_inquiry_parser.normalize import (
     InquiryContext,
     get_product_candidates,
@@ -15,15 +23,17 @@ from examples.financial_inquiry_parser.schema import InquiryQuote
 
 INSTRUCTIONS = """You are an expert derivatives trader focused on vanilla option RFQs.
 
-Call tools in this exact sequence:
-1. Call `get_product_candidates` exactly once, with `query` set to the raw user RFQ text.
-2. Then call `price_vanilla_option` exactly once.
+Call tools with this policy:
+1. Split the RFQ into one or more independent option legs.
+2. For each leg, call `price_vanilla_option` exactly once.
+3. Call `get_product_candidates` when `product_code` is uncertain.
+4. If there are multiple legs, complete all legs in the same tool-calling turn.
 
 General rules:
 - Fill only supported tool arguments.
 - Use high-confidence extraction only; if unsure, leave fields null.
 - Do not ask follow-up questions.
-- If you provide `product_code`, it must come from `get_product_candidates`.
+- If you used `get_product_candidates`, `product_code` must come from its candidates.
 
 Field rules:
 - `product_code`: letters only, uppercase if possible (e.g. HC, RB, OI).
@@ -34,6 +44,7 @@ Field rules:
 - `strike` vs `strike_offset`: mutually exclusive; prefer `strike` if an absolute strike is explicitly given.
 - `strike_offset`: ATM=0, ITM positive, OTM negative.
 - `underlying_price`: fill only when an explicit reference price is provided.
+- `quantity`: optional requested quantity; (e.g. `3万吨` -> `30000`).
 
 Contract parsing:
 - Parse combined tokens like `hc10`, `热卷05`, `rb2405`, `OI605` into `product_code` + month (+ optional year).
@@ -45,6 +56,19 @@ Expiry fields:
 - If no clear expiry is provided, leave all null.
 - For explicit date, keep the user's clear date expression (e.g. `9月15日` or `2026-09-15`).
 """
+
+
+def _collect_pricing_results(
+    context: RunContextWrapper[InquiryContext],
+    results: list[FunctionToolResult],
+) -> ToolsToFinalOutputResult:
+    _ = context
+    priced = [result.output for result in results if result.tool.name == "price_vanilla_option"]
+    if not priced:
+        return ToolsToFinalOutputResult(is_final_output=False, final_output=None)
+    if len(priced) == 1:
+        return ToolsToFinalOutputResult(is_final_output=True, final_output=priced[0])
+    return ToolsToFinalOutputResult(is_final_output=True, final_output=priced)
 
 
 async def main() -> None:
@@ -60,7 +84,7 @@ async def main() -> None:
         name="RFQToolBasedAgent",
         instructions=INSTRUCTIONS,
         tools=[get_product_candidates, price_vanilla_option],
-        tool_use_behavior={"stop_at_tool_names": ["price_vanilla_option"]},
+        tool_use_behavior=_collect_pricing_results,
         model_settings=ModelSettings(tool_choice="required"),
     )
 
@@ -68,6 +92,9 @@ async def main() -> None:
     quote = result.final_output
     if isinstance(quote, InquiryQuote):
         print(quote.model_dump_json(indent=2))
+    elif isinstance(quote, list):
+        payload = [item.model_dump() if isinstance(item, InquiryQuote) else item for item in quote]
+        print(json.dumps(payload, ensure_ascii=False, indent=2))
     else:
         # Fallback: tooling might return a plain dict depending on serialization settings.
         print(quote)

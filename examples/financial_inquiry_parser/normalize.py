@@ -323,6 +323,7 @@ def normalize_quote(
     product_code: str | None = None,
     contract_month: int | None = None,
     contract_year: int | None = None,
+    quantity: float | None = None,
 ) -> InquiryQuote:
     # Contract code from explicit split fields only.
     contract = build_contract_code_from_parts(
@@ -361,6 +362,7 @@ def normalize_quote(
         strike_offset=so,
         underlying_price=underlying_price,
         expire_date=exp,
+        quantity=quantity,
     )
 
 
@@ -429,6 +431,13 @@ def price_vanilla_option(
         int | None,
         Field(description="Optional contract year as YYYY or YY (e.g. 2026 or 26).", ge=0),
     ] = None,
+    quantity: Annotated[
+        float | None,
+        Field(
+            description="Requested trade quantity. Prefer normalized tons when unit is explicit.",
+            gt=0,
+        ),
+    ] = None,
 ) -> InquiryQuote:
     """Tool entrypoint for vanilla option RFQ pricing parameter normalization."""
 
@@ -446,4 +455,5 @@ def price_vanilla_option(
         product_code=product_code,
         contract_month=contract_month,
         contract_year=contract_year,
+        quantity=quantity,
     )
