@@ -134,3 +134,96 @@
 * 若下游定价系统要求字段必填（例如 `call_put`、`expire_date`），建议在后处理阶段对 `null` 做硬拦截，避免错误下游定价。
 
 ---
+
+
+---
+
+## 2026-02-13 ExecPlan Addendum
+
+# 迁移 financial_inquiry_parser 到 Agno（仅该示例）并接入 AG-UI 调试页
+
+This ExecPlan is a living document. The sections Progress, Surprises & Discoveries, Decision Log, and Outcomes & Retrospective must stay up to date as work proceeds.
+
+If `PLANS.md` is present in the repo, maintain this document in accordance with it and link back to it by path (`PLANS.md`).
+
+## Purpose / Big Picture
+目标是在不影响仓库其他 examples 的前提下，把 `examples/financial_inquiry_parser` 的运行层从 OpenAI Agents SDK 迁到 Agno，并提供一个可视化网页调试入口（AG-UI），用于观察多腿拆分、候选品种、工具调用与最终结构化结果。用户可直接在网页里输入 RFQ 并看到每条腿的解析结果。
+
+## Progress
+- [x] (2026-02-13) 完成 ExecPlan 草案，等待你确认实施。
+- [ ] 建立迁移分支与最小可运行骨架（CLI 先通）。
+- [ ] 完成 Agno 版 `financial_inquiry_parser` 后端。
+- [ ] 完成 AG-UI 对接（仅该示例）。
+- [ ] 建立回归测试集与自动化回归脚本。
+- [ ] 对比验收并收敛差异。
+
+## Surprises & Discoveries
+- 观察：当前仓库全量测试已有与本任务无关失败（codex 扩展测试），不适合用作本任务唯一验收门槛。
+  Evidence: `tests/extensions/experiemental/codex/test_codex_tool.py` 出现 `.FF`。
+
+## Decision Log
+- Decision: 仅迁移 `examples/financial_inquiry_parser`，其他示例保持 OpenAI Agents SDK 不动。
+  Rationale: 控制风险，快速验证 AG-UI 价值。
+  Date/Author: 2026-02-13 / Codex
+- Decision: 业务解析逻辑（`normalize.py`、`schema.py`、生成脚本）尽量复用，不重写。
+  Rationale: 保持行为一致，减少回归成本。
+  Date/Author: 2026-02-13 / Codex
+
+## Outcomes & Retrospective
+待实施后回填：产出、差异、遗留问题、后续建议。
+
+## Context and Orientation
+当前关键文件：
+- `examples/financial_inquiry_parser/normalize.py`：工具与归一化逻辑（含多腿支持、`quantity`）。
+- `examples/financial_inquiry_parser/schema.py`：`InquiryQuote` 契约。
+- `examples/financial_inquiry_parser/run_tool_based.py`：当前 OpenAI Agents SDK 入口。
+- `tests/test_financial_inquiry_parser_normalize.py`：核心单元测试。
+
+术语说明：
+- “运行层迁移”= 只替换 Agent 编排与调用框架，不改业务字段含义。
+- “AG-UI 调试页”= 前端展示消息流与工具调用轨迹，不负责最终生产报价逻辑。
+
+## Plan of Work
+第一阶段先做 CLI 等价迁移：新增 Agno 版 runner（平行文件），复用现有工具函数与 schema，确保单腿/多腿输出契约一致。第二阶段接 AG-UI：将 Agno 运行事件映射到 AG-UI 前端所需事件流。第三阶段补回归：构建示例集（单腿、多腿、中文别名、代码缩写、quantity、期限表达）并形成一键回归命令。最后做行为对比与文档。
+
+## Concrete Steps
+1. 新增 Agno 版入口（不覆盖旧文件）：
+   - `examples/financial_inquiry_parser/run_tool_based_agno.py`
+2. 新增 AG-UI 后端桥接与最小页面：
+   - `examples/financial_inquiry_parser/web/`（后端 + 前端）
+3. 新增回归数据与测试：
+   - `examples/financial_inquiry_parser/testdata/*.json`
+   - `tests/test_financial_inquiry_parser_regression.py`
+4. 验证命令（仓库根目录）：
+   - `uv run python -m examples.financial_inquiry_parser.run_tool_based_agno --current-date 2026-02-13 "<RFQ>"`
+   - `uv run pytest -q tests/test_financial_inquiry_parser_normalize.py tests/test_financial_inquiry_parser_regression.py`
+   - `make format && make lint && make mypy`
+
+## Validation and Acceptance
+验收标准：
+- 单腿输入：输出字段与当前实现语义一致（含 `quantity`）。
+- 多腿输入：返回列表，每腿都有独立 `InquiryQuote`。
+- 不确定品种时：可调用候选能力；确定时不强制调用。
+- AG-UI 页面可实时看到：输入、候选调用、定价调用、最终结果。
+- 回归集通过率达到目标阈值（先设 100% 针对收录样例）。
+
+## Idempotence and Recovery
+- 采用平行新增文件，不覆盖旧入口，支持随时回退到 `run_tool_based.py`。
+- 每步可独立运行验证；失败只回滚新增文件。
+- 保持旧 CLI 可继续使用，直到你确认切换默认入口。
+
+## Artifacts and Notes
+- 后续会补：
+  - 迁移前后同一批 RFQ 的对比输出样例。
+  - AG-UI 页面截图与事件日志片段。
+  - 回归样例清单与失败分析。
+
+## Interfaces and Dependencies
+最终应存在：
+- `run_tool_based_agno.py`（Agno 运行入口）
+- `InquiryQuote` 契约不破坏现有字段语义（新增字段继续尾部扩展原则）
+- AG-UI 对接层（仅服务 `financial_inquiry_parser`）
+- 回归测试集与测试文件
+
+新增依赖风险（需你确认）：
+- 若引入 Agno/AG-UI 相关包，会变更 `pyproject.toml` 与 `uv.lock`，属于用户可见运行环境变化。
